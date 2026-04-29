@@ -69,6 +69,7 @@ Gerçek zamanlı veri işleme mantığı
 
 Güvenli ve sürdürülebilir mimari
 
+
 Ana Sayfa
 
 ![image](https://github.com/iremkosar/PremierLig/blob/001386d42bc6d2eb170879a9fca49024ee9a1034/PremierLig.WebUI/wwwroot/1.png)
