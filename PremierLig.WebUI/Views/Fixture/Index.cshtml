@@ -1010,20 +1010,20 @@
                 <!-- WEEK SUMMARY -->
                 <div class="week-summary">
                     <div class="ws-card">
-                        <div class="ws-num" style="color:var(--blue)">10</div>
+                        <div class="ws-num" style="color:var(--blue)">@Model.Count</div>
                         <div class="ws-lbl">Toplam Maç</div>
                     </div>
                     <div class="ws-card">
-                        <div class="ws-num" style="color:var(--gold)">3</div>
-                        <div class="ws-lbl">Zirve Derbisi</div>
+                        <div class="ws-num" style="color:var(--green)">@Model.Where(x => x.Status == 2).Count()</div>
+                        <div class="ws-lbl">Biten Maç</div>
                     </div>
                     <div class="ws-card">
-                        <div class="ws-num" style="color:var(--green)">Cum–Paz</div>
-                        <div class="ws-lbl">Maç Günleri</div>
+                        <div class="ws-num" style="color:var(--gold)">@Model.Where(x => x.Status == 0).Count()</div>
+                        <div class="ws-lbl">Yaklaşan Maç</div>
                     </div>
                     <div class="ws-card">
-                        <div class="ws-num" style="color:var(--live)">18</div>
-                        <div class="ws-lbl">Nisan 2025</div>
+                        <div class="ws-num" style="color:var(--live)">@groupedByWeek.Count</div>
+                        <div class="ws-lbl">Toplam Hafta</div>
                     </div>
                 </div>
                 <!-- HAFTA TABLARI -->
