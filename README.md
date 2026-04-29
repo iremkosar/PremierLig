@@ -1,13 +1,17 @@
 Ana Sayfa
+
 ![image](https://github.com/iremkosar/PremierLig/blob/001386d42bc6d2eb170879a9fca49024ee9a1034/PremierLig.WebUI/wwwroot/1.png)
 
-Fikstür
+Fikstür Gösterim
+
 ![image](https://github.com/iremkosar/PremierLig/blob/001386d42bc6d2eb170879a9fca49024ee9a1034/PremierLig.WebUI/wwwroot/2.png)
 
 Maç Detayları
+
 ![image](https://github.com/iremkosar/PremierLig/blob/001386d42bc6d2eb170879a9fca49024ee9a1034/PremierLig.WebUI/wwwroot/3.png)
 
 Puan Tablosu
+
 ![image](https://github.com/iremkosar/PremierLig/blob/001386d42bc6d2eb170879a9fca49024ee9a1034/PremierLig.WebUI/wwwroot/4.png)
 
 Admin Panel Sistemi 
