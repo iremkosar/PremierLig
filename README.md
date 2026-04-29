@@ -43,7 +43,9 @@ Gol, kart ve değişikliklerin görünümü
 Maç, olay ve istatistik yönetimi
 CRUD işlemleri 
 Merkezi kontrol paneli
+
 🧰 Kullanılan Teknolojiler
+
 
 ASP.NET Core 6 (Web API & MVC)
 Entity Framework Core (Code First)
