@@ -22,8 +22,11 @@ Tüm veri iletişimi **Web API** üzerinden **IHttpClientFactory** kullanılarak
 Sistemde kullanılan temel entity yapıları:
 
 Team → Takım bilgileri
+
 Fixture → Maç, skor ve hafta bilgisi
+
 MatchEvent → Gol, kart ve oyuncu değişiklikleri
+
 MatchStats → Maç istatistikleri
 
 ⚙️ Özellikler
