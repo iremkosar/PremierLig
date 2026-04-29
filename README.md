@@ -58,10 +58,15 @@ Swagger
 Bootstrap 5
 
 ⚡ Öne Çıkanlar
+
 N Katmanlı Mimari (N-Tier) ile ölçeklenebilir yapı
+
 Web API tabanlı veri yönetimi
+
 LINQ ile dinamik hesaplama
+
 Gerçek zamanlı veri işleme mantığı
+
 Güvenli ve sürdürülebilir mimari
 
 Ana Sayfa
