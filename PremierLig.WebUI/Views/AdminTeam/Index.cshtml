@@ -1,0 +1,161 @@
+﻿@model List<PremierLig.WebUI.Dtos.ResultTeamDto>
+@{
+   
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Takım Yönetimi";
+    int page = int.TryParse(Context.Request.Query["page"], out var p) ? p : 1;
+    int pageSize = 10;
+    var pagedModel = Model.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+    int totalPages = (int)Math.Ceiling(Model.Count / (double)pageSize);
+}
+
+<style>
+    .team-row {
+        background: var(--card);
+        transition: all .2s;
+    }
+
+        .team-row:hover {
+            background: var(--elevated);
+        }
+
+        .team-row td {
+            padding: 12px;
+            border: none;
+            vertical-align: middle;
+        }
+
+            .team-row td:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            .team-row td:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
+    .teams-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 6px;
+    }
+
+        .teams-table thead th {
+            font-family: var(--fd);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--t3);
+            padding: 8px 12px;
+            border: none;
+        }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 7px;
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .2s;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit {
+        background: rgba(0,230,118,.08);
+        border-color: rgba(0,230,118,.2);
+        color: var(--green);
+    }
+
+        .btn-edit:hover {
+            background: rgba(0,230,118,.18);
+            color: var(--green);
+        }
+
+    .btn-delete {
+        background: rgba(255,23,68,.08);
+        border-color: rgba(255,23,68,.2);
+        color: var(--live);
+    }
+
+        .btn-delete:hover {
+            background: rgba(255,23,68,.18);
+            color: var(--live);
+        }
+</style>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div style="font-size:13px;color:var(--t3)">
+        Toplam <strong style="color:var(--t1)">@Model.Count</strong> takım
+    </div>
+    <a asp-controller="AdminTeam" asp-action="Create"
+       style="display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#000;
+              padding:9px 18px;border-radius:8px;font-family:var(--fd);font-size:13px;
+              font-weight:800;text-decoration:none">
+        <i class="bi bi-plus-lg"></i> Yeni Takım Ekle
+    </a>
+</div>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <table class="teams-table">
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>Takım Adı</th>
+                <th>Kısa Ad</th>
+                <th>Stadyum</th>
+                <th>Şehir</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in pagedModel)
+            {
+                <tr class="team-row">
+                    <td>
+                        <img src="@t.LogoUrl" style="width:36px;height:36px;object-fit:contain;" />
+                    </td>
+                    <td style="font-family:var(--fd);font-size:15px;font-weight:700">@t.TeamName</td>
+                    <td style="font-family:var(--fd);color:var(--t2);font-weight:700">@t.ShortName</td>
+                    <td style="font-size:12px;color:var(--t2)">@t.StadiumName</td>
+                    <td style="font-size:12px;color:var(--t2)">@t.City</td>
+                    <td>
+                        <div style="display:flex;gap:6px">
+                            <a asp-controller="AdminTeam" asp-action="Update"
+                               asp-route-id="@t.TeamId" class="action-btn btn-edit">
+                                <i class="bi bi-pencil"></i> Düzenle
+                            </a>
+                            <a asp-controller="AdminTeam" asp-action="Delete"
+                               asp-route-id="@t.TeamId" class="action-btn btn-delete"
+                               onclick="return confirm('Takımı silmek istediğinizden emin misiniz?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (totalPages > 1)
+{
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:20px">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a href="?page=@i"
+               style="display:inline-flex;align-items:center;justify-content:center;
+                      width:36px;height:36px;border-radius:8px;font-family:var(--fd);
+                      font-size:13px;font-weight:700;text-decoration:none;
+                      background:@(i == page ? "var(--green)" : "var(--card)");
+                      color:@(i == page ? "#000" : "var(--t2)");
+                      border:1px solid @(i == page ? "var(--green)" : "var(--border)")">
+                @i
+            </a>
+        }
+    </div>
+}
+

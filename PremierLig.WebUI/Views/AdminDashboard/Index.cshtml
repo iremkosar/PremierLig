@@ -1,0 +1,376 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var teams = ViewBag.Teams as List<PremierLig.WebUI.Dtos.ResultTeamDto>;
+    var recentFixtures = ViewBag.RecentFixtures as List<PremierLig.WebUI.Dtos.ResultFixtureDto>;
+    string GetTeamName(int id) => teams?.FirstOrDefault(t => t.TeamId == id)?.TeamName ?? "—";
+    string GetLogoUrl(int id) => teams?.FirstOrDefault(t => t.TeamId == id)?.LogoUrl ?? "";
+}
+
+<style>
+    .stat-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .stat-label {
+        font-family: var(--fd);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--t3);
+        margin-bottom: 4px;
+    }
+
+    .stat-value {
+        font-family: var(--fd);
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--t1);
+        line-height: 1;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-title {
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--t3);
+    }
+
+    .see-all {
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--green);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+        .see-all:hover {
+            color: #00c853;
+        }
+
+    .match-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .match-table thead th {
+            font-family: var(--fd);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--t3);
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .match-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .2s;
+        }
+
+            .match-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .match-table tbody tr:hover {
+                background: var(--elevated);
+            }
+
+        .match-table td {
+            padding: 14px 20px;
+            vertical-align: middle;
+        }
+
+    .team-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--fd);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--t1);
+    }
+
+    .score-pill {
+        background: var(--elevated);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-family: var(--fd);
+        font-size: 16px;
+        font-weight: 900;
+        color: var(--t1);
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        font-family: var(--fd);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 8px;
+    }
+
+    .status-finished {
+        background: rgba(0,230,118,.1);
+        color: var(--green);
+    }
+
+    .status-live {
+        background: rgba(255,23,68,.1);
+        color: var(--live);
+    }
+
+    .status-upcoming {
+        background: rgba(41,121,255,.1);
+        color: var(--blue);
+    }
+
+    .edit-link {
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--green);
+        text-decoration: none;
+    }
+
+        .edit-link:hover {
+            color: #00c853;
+        }
+
+    .quick-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        text-decoration: none;
+        color: var(--t2);
+        font-family: var(--fd);
+        font-size: 13px;
+        font-weight: 700;
+        transition: all .2s;
+    }
+
+        .quick-btn:last-child {
+            border-bottom: none;
+        }
+
+        .quick-btn:hover {
+            background: var(--elevated);
+            color: var(--t1);
+        }
+
+    .quick-btn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+</style>
+
+@* STAT CARDS *@
+<div class="stat-cards">
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(0,230,118,.12)">
+            <i class="bi bi-trophy" style="color:var(--green)"></i>
+        </div>
+        <div>
+            <div class="stat-label">Toplam Maç</div>
+            <div class="stat-value">@ViewBag.TotalMatches</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(255,23,68,.12)">
+            <i class="bi bi-record-circle" style="color:var(--live)"></i>
+        </div>
+        <div>
+            <div class="stat-label">Canlı Maç</div>
+            <div class="stat-value">@ViewBag.LiveMatches</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(41,121,255,.12)">
+            <i class="bi bi-check2-all" style="color:var(--blue)"></i>
+        </div>
+        <div>
+            <div class="stat-label">Biten Maç</div>
+            <div class="stat-value">@ViewBag.FinishedMatches</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(255,214,0,.12)">
+            <i class="bi bi-calendar3" style="color:var(--gold)"></i>
+        </div>
+        <div>
+            <div class="stat-label">Oynanmamış</div>
+            <div class="stat-value">@ViewBag.UpcomingMatches</div>
+        </div>
+    </div>
+</div>
+
+@* MAIN GRID *@
+<div class="main-grid">
+
+    @* SON MAÇLAR *@
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Son Maçlar</div>
+            <a asp-controller="AdminFixture" asp-action="Index" class="see-all">
+                Tümünü Gör <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <table class="match-table">
+            <thead>
+                <tr>
+                    <th>Ev Sahibi</th>
+                    <th style="text-align:center">Skor</th>
+                    <th>Deplasman</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (recentFixtures != null)
+                {
+                    @foreach (var f in recentFixtures)
+                    {
+                        <tr>
+                            <td>
+                                <div class="team-cell">
+                                    <img src="@GetLogoUrl(f.HomeTeamId)" style="width:28px;height:28px;object-fit:contain" />
+                                    @GetTeamName(f.HomeTeamId)
+                                </div>
+                            </td>
+                            <td style="text-align:center">
+                                <span class="score-pill">@f.HomeScore – @f.AwayScore</span>
+                            </td>
+                            <td>
+                                <div class="team-cell">
+                                    <img src="@GetLogoUrl(f.AwayTeamId)" style="width:28px;height:28px;object-fit:contain" />
+                                    @GetTeamName(f.AwayTeamId)
+                                </div>
+                            </td>
+                            <td>
+                                @if (f.Status == 2)
+                                {
+                                    <span class="status-badge status-finished">Bitti</span>
+                                }
+                                else if (f.Status == 1)
+                                {
+                                    <span class="status-badge status-live">Canlı</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-upcoming">Yaklaşan</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="AdminFixture" asp-action="UpdateScore"
+                                   asp-route-id="@f.FixtureId" class="edit-link">
+                                    Düzenle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* HIZLI İŞLEMLER *@
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">Hızlı İşlemler</div>
+        </div>
+        <a asp-controller="AdminFixture" asp-action="Create" class="quick-btn">
+            <div class="quick-btn-icon" style="background:rgba(0,230,118,.12)">
+                <i class="bi bi-plus-circle" style="color:var(--green)"></i>
+            </div>
+            Yeni Maç Ekle
+        </a>
+        <a asp-controller="AdminFixture" asp-action="Index" class="quick-btn">
+            <div class="quick-btn-icon" style="background:rgba(41,121,255,.12)">
+                <i class="bi bi-pencil" style="color:var(--blue)"></i>
+            </div>
+            Skor Güncelle
+        </a>
+        <a asp-controller="AdminSeason" asp-action="Index" class="quick-btn">
+            <div class="quick-btn-icon" style="background:rgba(255,214,0,.12)">
+                <i class="bi bi-calendar3" style="color:var(--gold)"></i>
+            </div>
+            Sezon Yönetimi
+        </a>
+        <a asp-controller="AdminTeam" asp-action="Index" class="quick-btn">
+            <div class="quick-btn-icon" style="background:rgba(255,23,68,.12)">
+                <i class="bi bi-shield" style="color:var(--live)"></i>
+            </div>
+            Takım Yönetimi
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="quick-btn">
+            <div class="quick-btn-icon" style="background:rgba(123,150,196,.12)">
+                <i class="bi bi-globe" style="color:var(--t2)"></i>
+            </div>
+            Siteyi Görüntüle
+        </a>
+    </div>
+</div>

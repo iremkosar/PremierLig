@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstract\" />
+    <Folder Include="Concrete\" />
+    <Folder Include="EntityFramework\" />
+    <Folder Include="UnitOfWorkDesignPattern\" />
+    <Folder Include="RepositoryDesignPattern\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.36" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.36" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PremierLig.DtoLayer\PremierLig.DtoLayer.csproj" />
+    <ProjectReference Include="..\PremierLig.EntityLayer\PremierLig.EntityLayer.csproj" />
+  </ItemGroup>
+
+</Project>

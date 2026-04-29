@@ -1,0 +1,183 @@
+﻿@model PremierLig.WebUI.Dtos.ResultFixtureDto
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Skor Güncelle";
+    var teams = ViewBag.Teams as List<PremierLig.WebUI.Dtos.ResultTeamDto>;
+    string GetTeamName(int id) => teams?.FirstOrDefault(t => t.TeamId == id)?.TeamName ?? "—";  
+    var stadiums = ViewBag.Stadiums as List<PremierLig.WebUI.Dtos.ResultStadiumDto>; 
+  
+}
+
+<style>
+    .form-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        max-width: 600px;
+    }
+
+    .match-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--elevated);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .match-team {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .match-team-name {
+        font-family: var(--fd);
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .match-vs {
+        font-family: var(--fd);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--t3);
+    }
+
+    .form-label {
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--t3);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        background: var(--elevated) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--t1) !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        font-family: var(--fb) !important;
+        font-size: 14px !important;
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--blue) !important;
+        box-shadow: 0 0 0 3px rgba(41,121,255,.15) !important;
+        outline: none !important;
+    }
+
+    .score-input {
+        font-family: var(--fd) !important;
+        font-size: 32px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+    }
+
+    .submit-btn {
+        background: var(--green);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-family: var(--fd);
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .submit-btn:hover { background: #00c853; }
+</style>
+
+<div class="form-card">
+
+    <!-- MAÇ BAŞLIĞI -->
+    <div class="match-header">
+        <div class="match-team">
+            <div class="match-team-name">@GetTeamName(Model.HomeTeamId)</div>
+            <div style="font-size:11px;color:var(--t3)">Ev Sahibi</div>
+        </div>
+        <div class="match-vs">VS</div>
+        <div class="match-team">
+            <div class="match-team-name">@GetTeamName(Model.AwayTeamId)</div>
+            <div style="font-size:11px;color:var(--t3)">Deplasman</div>
+        </div>
+    </div>
+
+    <form action="/AdminFixture/UpdateScore" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="FixtureId" value="@Model.FixtureId" />
+        <input type="hidden" name="HomeTeamId" value="@Model.HomeTeamId" />
+        <input type="hidden" name="AwayTeamId" value="@Model.AwayTeamId" />
+        <input type="hidden" name="MatchDate" value="@Model.MatchDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
+        <input type="hidden" name="WeekNumber" value="@Model.WeekNumber" />
+        <input type="hidden" name="SeasonId" value="@Model.SeasonId" />
+        <input type="hidden" name="StadiumId" value="@Model.StadiumId" />
+        <input type="hidden" name="Referee" value="@Model.Referee" />
+        <input type="hidden" name="Attendance" value="@Model.Attendance" />
+
+        <div class="row g-3 mb-4">
+            <div class="col-5">
+                <label class="form-label">@GetTeamName(Model.HomeTeamId) Skoru</label>
+                <input type="number" name="HomeScore" class="form-control score-input"
+                       value="@Model.HomeScore" min="0" />
+            </div>
+            <div class="col-2 d-flex align-items-end justify-content-center pb-2">
+                <span style="font-family:var(--fd);font-size:24px;font-weight:900;color:var(--t3)">–</span>
+            </div>
+            <div class="col-5">
+                <label class="form-label">@GetTeamName(Model.AwayTeamId) Skoru</label>
+                <input type="number" name="AwayScore" class="form-control score-input"
+                       value="@Model.AwayScore" min="0" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <label class="form-label">Maç Durumu</label>
+                <select name="Status" class="form-select">
+                    <option value="0" @@(Model.Status == 0 ? "selected" : "")>Oynanmadı</option>
+                    <option value="1" @@(Model.Status == 1 ? "selected" : "")>Devam Ediyor</option>
+                    <option value="2" @@(Model.Status == 2 ? "selected" : "")>Bitti</option>
+                </select>
+            </div>
+             <div class="col-6">
+        <label class="form-label">Stadyum</label>
+        <select name="StadiumId" class="form-select">
+            <option value="">Seçin...</option>
+            @foreach (var s in stadiums)
+            {
+                <option value="@s.StadiumId" @@(Model.StadiumId == s.StadiumId ? "selected" : "")>
+                    @s.Name
+                </option>
+            }
+        </select>
+    </div>
+        </div>
+
+        <div style="display:flex;gap:12px">
+            <button type="submit" class="submit-btn">
+                <i class="bi bi-check2"></i> Skoru Kaydet
+            </button>
+            <a asp-controller="AdminFixture" asp-action="Index"
+               style="display:inline-flex;align-items:center;gap:7px;background:var(--elevated);
+                      color:var(--t2);padding:12px 20px;border-radius:8px;font-family:var(--fd);
+                      font-size:14px;font-weight:700;text-decoration:none;border:1px solid var(--border)">
+                İptal
+            </a>
+        </div>
+    </form>
+</div>

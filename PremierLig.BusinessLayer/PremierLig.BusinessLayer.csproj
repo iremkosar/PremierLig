@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Container\" />
+    <Folder Include="Constans\" />
+    <Folder Include="ValidationRules\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PremierLig.DataAccessLayer\PremierLig.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\PremierLig.DtoLayer\PremierLig.DtoLayer.csproj" />
+    <ProjectReference Include="..\PremierLig.EntityLayer\PremierLig.EntityLayer.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,263 @@
+﻿@model List<PremierLig.WebUI.Dtos.ResultFixtureDto>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Tüm Maçlar";
+    var teams = ViewBag.Teams as List<PremierLig.WebUI.Dtos.ResultTeamDto>;
+    var stadiums = ViewBag.Stadiums as List<PremierLig.WebUI.Dtos.ResultStadiumDto>;
+    string GetTeamName(int id) => teams?.FirstOrDefault(t => t.TeamId == id)?.TeamName ?? "—";
+    string GetStadiumName(int? id) => stadiums?.FirstOrDefault(s => s.StadiumId == id)?.Name ?? "—";
+    int page = int.TryParse(Context.Request.Query["page"], out var p) ? p : 1;
+    int pageSize = 10;
+    var pagedModel = Model.OrderByDescending(x => x.MatchDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+    int totalPages = (int)Math.Ceiling(Model.Count / (double)pageSize);
+}
+
+<style>
+    .matches-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 6px;
+    }
+
+        .matches-table thead th {
+            font-family: var(--fd);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--t3);
+            padding: 8px 12px;
+            border: none;
+        }
+
+    .match-row {
+        background: var(--card);
+        transition: all .2s;
+    }
+
+        .match-row:hover {
+            background: var(--elevated);
+        }
+
+        .match-row td {
+            padding: 12px;
+            border: none;
+            vertical-align: middle;
+        }
+
+            .match-row td:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            .match-row td:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
+    .status-badge {
+        font-family: var(--fd);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 8px;
+    }
+
+    .status-finished {
+        background: rgba(0,230,118,.1);
+        color: var(--green);
+    }
+
+    .status-upcoming {
+        background: rgba(41,121,255,.1);
+        color: var(--blue);
+    }
+
+    .status-live {
+        background: rgba(255,23,68,.1);
+        color: var(--live);
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 7px;
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        transition: all .2s;
+        border: 1px solid transparent;
+    }
+
+    .btn-score {
+        background: rgba(0,230,118,.08);
+        border-color: rgba(0,230,118,.2);
+        color: var(--green);
+    }
+
+        .btn-score:hover {
+            background: rgba(0,230,118,.18);
+            color: var(--green);
+        }
+
+    .btn-events {
+        background: rgba(41,121,255,.08);
+        border-color: rgba(41,121,255,.2);
+        color: var(--blue);
+    }
+
+        .btn-events:hover {
+            background: rgba(41,121,255,.18);
+            color: var(--blue);
+        }
+
+    .btn-delete {
+        background: rgba(255,23,68,.08);
+        border-color: rgba(255,23,68,.2);
+        color: var(--live);
+    }
+
+        .btn-delete:hover {
+            background: rgba(255,23,68,.18);
+            color: var(--live);
+        }
+
+    .score-display {
+        font-family: var(--fd);
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--t1);
+    }
+
+    .team-name {
+        font-family: var(--fd);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .week-badge {
+        font-family: var(--fd);
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--elevated);
+        padding: 3px 9px;
+        border-radius: 7px;
+        color: var(--t2);
+    }
+</style>
+
+<!-- HEADER -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div>
+        <div style="font-size:13px;color:var(--t3)">Toplam <strong style="color:var(--t1)">@Model.Count</strong> maç</div>
+    </div>
+    <a asp-controller="AdminFixture" asp-action="Create"
+       style="display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#000;
+              padding:9px 18px;border-radius:8px;font-family:var(--fd);font-size:13px;
+              font-weight:800;text-decoration:none;letter-spacing:0.5px">
+        <i class="bi bi-plus-lg"></i> Yeni Maç Ekle
+    </a>
+</div>
+
+<!-- TABLE -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <table class="matches-table">
+        <thead>
+            <tr>
+                <th>Hafta</th>
+                <th>Ev Sahibi</th>
+                <th style="text-align:center">Skor</th>
+                <th>Deplasman</th>
+                <th>Stadyum</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in pagedModel)
+            {
+                <tr class="match-row">
+                    <td><span class="week-badge">H@(m.WeekNumber)</span></td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <img src="@(teams?.FirstOrDefault(t => t.TeamId == m.HomeTeamId)?.LogoUrl)"
+                                 style="width:28px;height:28px;object-fit:contain" />
+                            <span class="team-name">@GetTeamName(m.HomeTeamId)</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">
+                        @if (m.Status == 2)
+                        {
+                            <span class="score-display">@m.HomeScore – @m.AwayScore</span>
+                        }
+                        else
+                        {
+                            <span style="color:var(--t3);font-family:var(--fd);font-size:16px">VS</span>
+                        }
+                    </td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <img src="@(teams?.FirstOrDefault(t => t.TeamId == m.AwayTeamId)?.LogoUrl)"
+                                 style="width:28px;height:28px;object-fit:contain" />
+                            <span class="team-name">@GetTeamName(m.AwayTeamId)</span>
+                        </div>
+                    </td>
+                    <td style="font-size:12px;color:var(--t2)">@GetStadiumName(m.StadiumId)</td>
+                    <td style="font-size:12px;color:var(--t2)">
+                        @m.MatchDate.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+                    </td>
+                    <td>
+                        @if (m.Status == 2)
+                        {
+                            <span class="status-badge status-finished">Bitti</span>
+                        }
+                        else if (m.Status == 1)
+                        {
+                            <span class="status-badge status-live">Canlı</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-upcoming">Yaklaşan</span>
+                        }
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px">
+                            <a asp-controller="AdminFixture" asp-action="UpdateScore"
+                               asp-route-id="@m.FixtureId" class="action-btn btn-score">
+                                <i class="bi bi-pencil"></i> Skor
+                            </a>
+                            <a asp-controller="AdminMatchEvent" asp-action="Index"
+                               asp-route-id="@m.FixtureId" class="action-btn btn-events">
+                                <i class="bi bi-activity"></i> Olaylar
+                            </a>
+                            <a asp-controller="AdminFixture" asp-action="Delete"
+                               asp-route-id="@m.FixtureId" class="action-btn btn-delete"
+                               onclick="return confirm('Maçı silmek istediğinizden emin misiniz?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- PAGING -->
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:20px">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a href="?page=@i"
+               style="display:inline-flex;align-items:center;justify-content:center;
+                  width:36px;height:36px;border-radius:8px;font-family:var(--fd);
+                  font-size:13px;font-weight:700;text-decoration:none;
+                  background:@(i == page ? "var(--green)" : "var(--card)");
+                  color:@(i == page ? "#000" : "var(--t2)");
+                  border:1px solid @(i == page ? "var(--green)" : "var(--border)")">
+                @i
+            </a>
+        }
+</div>
